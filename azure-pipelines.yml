@@ -23,6 +23,7 @@ stages:
             provider: 'azurerm'
             command: 'init'
             workingDirectory: $(directory)
+            backendServiceArm: 'ServiceConnection'
             backendAzureRmOverrideSubscriptionID: '1ef3481e-bfe1-4160-aeeb-862132dc8f0e'
             backendAzureRmResourceGroupName: 'rg-backend'
             backendAzureRmStorageAccountName: 'strgaccbackend'
