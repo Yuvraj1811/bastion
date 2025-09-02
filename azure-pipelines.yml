@@ -11,7 +11,7 @@ stages:
   - stage: Build
     displayName: Terraform(init/fmt/validate/plan)
     jobs:
-    - job: Terraform Plan
+    - job: TerraformPlan
       steps:
         - task: TerraformInstaller@1
           inputs:
