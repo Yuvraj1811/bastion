@@ -1,0 +1,73 @@
+trigger: 
+   branches:
+     include:
+       - main
+
+pool: MyAgent1
+
+variables:
+     directory: '$(System.DefaultWorkingDirectory)/rootModule/dev-env'
+stages:
+  - stage: Build
+    displayName: Terraform(init/fmt/validate/plan)
+    jobs:
+    - job: Terraform Plan
+      steps:
+        - task: TerraformInstaller@1
+          inputs:
+            terraformVersion: 'latest'
+
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: $(directory)
+            backendAzureRmOverrideSubscriptionID: '1ef3481e-bfe1-4160-aeeb-862132dc8f0e'
+            backendAzureRmResourceGroupName: 'rg-backend'
+            backendAzureRmStorageAccountName: 'strgaccbackend'
+            backendAzureRmContainerName: 'strgcontainer'
+            backendAzureRmKey: 'terraform.tfstate'
+
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'custom'
+            workingDirectory: $(directory)
+            outputTo: 'console'
+            customCommand: 'fmt'
+
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'validate'
+            workingDirectory: $(directory)
+
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'plan'
+            workingDirectory: $(directory)
+
+  - stage: Apply
+    displayName: Terraform Apply
+    dependsOn: 
+    condition: succeeded()
+    jobs: 
+      - deployment: TerraformApply
+        environment: dev
+        strategy:
+         runOnce:
+            deploy:
+              steps:
+                - task: TerraformInstaller@1
+                  inputs:
+                    terraformVersion: 'latest'
+
+                - task: TerraformTask@5
+                  inputs:
+                    provider: 'azurerm'
+                    command: 'apply'
+                    workingDirectory: $(directory)
+                    args: '-auto-approve'
+
+        
