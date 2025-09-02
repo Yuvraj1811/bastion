@@ -35,6 +35,7 @@ stages:
           inputs:
             provider: 'azurerm'
             command: 'custom'
+            environmentServiceNameAzureRM: 'ServiceConnection'
             workingDirectory: $(directory)
             outputTo: 'console'
             customCommand: 'fmt'
@@ -44,6 +45,7 @@ stages:
           inputs:
             provider: 'azurerm'
             command: 'validate'
+            environmentServiceNameAzureRM: 'ServiceConnection'
             workingDirectory: $(directory)
 
         - task: TerraformTask@5
@@ -51,6 +53,7 @@ stages:
           inputs:
             provider: 'azurerm'
             command: 'plan'
+            environmentServiceNameAzureRM: 'ServiceConnection'
             workingDirectory: $(directory)
 
   - stage: Apply
@@ -73,6 +76,7 @@ stages:
                   inputs:
                     provider: 'azurerm'
                     command: 'apply'
+                    environmentServiceNameAzureRM: 'ServiceConnection'
                     workingDirectory: $(directory)
                     args: '-auto-approve'
 
